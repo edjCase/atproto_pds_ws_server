@@ -8,6 +8,11 @@ const PORT = process.env.PORT || 8080;
 const CANISTER_URL = process.env.CANISTER_URL || 'https://CANISTER.ic0.app/updates';
 const POLL_INTERVAL = 1000; // 1 second
 
+// Validate CANISTER_URL is configured
+if (CANISTER_URL.includes('CANISTER.ic0.app')) {
+  console.warn('[WARNING] CANISTER_URL is using the placeholder value. Please set the CANISTER_URL environment variable to your actual canister URL.');
+}
+
 // Track sequence number for commits
 let sequenceNumber = 0;
 
@@ -56,6 +61,9 @@ wss.on('connection', (ws, req) => {
 });
 
 // Function to fetch updates from the canister
+// Expected canister response format: Array of update objects
+// Each update should have: { action: string, path: string }
+// Example: [{ action: "create", path: "app.bsky.feed.post/abc123" }]
 function fetchCanisterUpdates() {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(CANISTER_URL);
@@ -91,6 +99,8 @@ function broadcastCommit(updates) {
   sequenceNumber++;
   
   // Transform the updates into AT Protocol commit format
+  // Note: Default values are used as fallbacks per the AT Protocol specification example
+  // action defaults to "create" and path to "x/y" format if not provided by canister
   const commit = {
     "$type": "com.atproto.sync.subscribeRepos#commit",
     "seq": sequenceNumber,
@@ -118,7 +128,7 @@ function startPolling() {
     try {
       const updates = await fetchCanisterUpdates();
       
-      // Only broadcast if we have updates
+      // Only broadcast if we have updates and they are in array format
       if (updates && Array.isArray(updates) && updates.length > 0) {
         broadcastCommit(updates);
       }
