@@ -1,0 +1,23 @@
+{
+  "name": "atproto_pds_ws_server",
+  "version": "1.0.0",
+  "description": "A websocket server used to accept com.atproto.sync.subscribeRepo calls, and polls the IC PDS canister for updates",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "atproto",
+    "websocket",
+    "pds",
+    "bluesky"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
