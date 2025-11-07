@@ -17,11 +17,6 @@ const server = http.createServer((req, res) => {
 // Create WebSocket server
 const wss = new WebSocket.Server({
   server,
-  verifyClient: (info) => {
-    const pathname = url.parse(info.req.url).pathname;
-    // Accept connections on /xrpc/com.atproto.sync.subscribeRepos
-    return pathname === '/xrpc/com.atproto.sync.subscribeRepos';
-  }
 });
 
 // Handle WebSocket connections
@@ -147,8 +142,8 @@ wss.on('connection', (ws, req) => {
 // Start the server
 server.listen(PORT, () => {
   console.log(`[${new Date().toISOString()}] WebSocket server listening on port ${PORT}`);
-  console.log(`[${new Date().toISOString()}] Accepting connections on /xrpc/com.atproto.sync.subscribeRepos`);
-  console.log(`[${new Date().toISOString()}] Polling ${API_URL} every ${POLL_INTERVAL}ms per client`);
+  console.log(`[${new Date().toISOString()}] Accepting connections`);
+  console.log(`[${new Date().toISOString()}] Will poll ${API_URL} every ${POLL_INTERVAL}ms per client`);
 });
 
 // Handle graceful shutdown
