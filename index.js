@@ -25,7 +25,7 @@ wss.on('connection', (ws, req) => {
   console.log(`[${new Date().toISOString()}] Client connected: ${clientId}`);
 
   // Track the last sequence number for this client
-  let lastSeq = 0;
+  let lastSeq = parsedUrl.query.cursor ? parseInt(parsedUrl.query.cursor) : 0;
   let pollInterval = null;
   let isActive = true;
 
