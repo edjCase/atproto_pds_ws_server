@@ -1,7 +1,6 @@
 const WebSocket = require('ws');
 const http = require('http');
 const https = require('https');
-const url = require('url');
 
 // Configuration
 const PORT = process.env.PORT || 8080;
@@ -87,10 +86,6 @@ wss.on('connection', (ws, req) => {
 
             const response = JSON.parse(data);
             console.log(`[${new Date().toISOString()}] API response parsed for ${clientId}: ${response.messages?.length || 0} messages`);
-            if (response.messages?.length > 0) {
-              console.log(`  First message seq: ${response.messages[0].seq}`);
-              console.log(`  Last message seq: ${response.messages[response.messages.length - 1].seq}`);
-            }
             resolve(response);
           } catch (error) {
             console.error(`[${new Date().toISOString()}] Parse error for ${clientId}:`, error.message, 'Data:', data.substring(0, 200));
@@ -114,18 +109,18 @@ wss.on('connection', (ws, req) => {
         return;
       }
 
-      // Send each message individually
-      for (const message of response.messages) {
+      // Send each message individually as binary
+      for (let i = 0; i < response.messages.length; i++) {
         if (ws.readyState === WebSocket.OPEN) {
-          const messageStr = JSON.stringify(message);
-          console.log(`[${new Date().toISOString()}] Sending message to ${clientId}: seq=${message.seq}, size=${messageStr.length} bytes`);
-          ws.send(messageStr);
+          const base64Message = response.messages[i];
+          const binaryMessage = Buffer.from(base64Message, 'base64');
+
+          console.log(`[${new Date().toISOString()}] Sending binary message ${i + 1}/${response.messages.length} to ${clientId}: size=${binaryMessage.length} bytes`);
+          ws.send(binaryMessage);
           messagesSent++;
 
-          // Update lastSeq to the highest seq value
-          if (message.seq && message.seq > lastSeq) {
-            lastSeq = message.seq;
-          }
+          // Update lastSeq - increment for each message
+          lastSeq++;
         } else {
           console.log(`[${new Date().toISOString()}] Cannot send to ${clientId} - readyState: ${ws.readyState}`);
           break;
