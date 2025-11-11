@@ -21,12 +21,11 @@ const wss = new WebSocket.Server({
 
 // Handle WebSocket connections
 wss.on('connection', (ws, req) => {
+  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   const clientId = `${req.socket.remoteAddress}:${req.socket.remotePort}`;
   console.log(`[${new Date().toISOString()}] Client connected: ${clientId}`);
-  const parsedUrl = new URL(CANISTER_URL);
 
-  // Track the last sequence number for this client
-  let lastSeq = parsedUrl.query.cursor ? parseInt(parsedUrl.query.cursor) : 0;
+  let lastSeq = parsedUrl.searchParams.get('cursor') ? parseInt(parsedUrl.searchParams.get('cursor')) : 0;
   let pollInterval = null;
   let isActive = true;
 
