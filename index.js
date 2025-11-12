@@ -4,7 +4,7 @@ const https = require('https');
 
 // Configuration
 const PORT = process.env.PORT || 8080;
-const API_URL = 'https://pds2.edjcase.com/api/getRepoMessages';
+const API_URL = 'https://pds.edjcase.com/api/getRepoMessages';
 const POLL_INTERVAL = 30000; // 30 seconds
 
 // Create HTTP server
