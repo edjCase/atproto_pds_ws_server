@@ -96,10 +96,12 @@ wss.on('connection', (ws, req) => {
         if (ws.readyState === WebSocket.OPEN) {
           const base64Message = response.messages[i];
           const binaryMessage = Buffer.from(base64Message, 'base64');
+          console.log(`[${new Date().toISOString()}] Sending message #${messagesSent + 1} to ${clientId}, seq: ${lastSeq + 1}, base64: ${base64Message}`);
           ws.send(binaryMessage);
           messagesSent++;
           lastSeq++;
         } else {
+          console.log(`[${new Date().toISOString()}] WebSocket closed during message send for ${clientId}, stopping at message ${i + 1}/${response.messages.length}`);
           break;
         }
       }
@@ -121,7 +123,8 @@ wss.on('connection', (ws, req) => {
 
   // Handle client disconnect
   ws.on('close', (code, reason) => {
-    console.log(`[${new Date().toISOString()}] Client disconnected: ${clientId}, sent ${messagesSent} messages`);
+    const reasonText = reason ? reason.toString() : 'No reason provided';
+    console.log(`[${new Date().toISOString()}] Client disconnected: ${clientId}, code: ${code}, reason: "${reasonText}", sent ${messagesSent} messages, final cursor: ${lastSeq}`);
     isActive = false;
     if (pollInterval) {
       clearInterval(pollInterval);
