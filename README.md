@@ -34,13 +34,13 @@ The server will listen on port 8080 by default.
 
 Configure the server using environment variables:
 
--   `PORT` - Server port (default: 8080)
--   `CANISTER_URL` - URL to poll for updates (default: https://CANISTER.ic0.app/updates)
+-   `DOMAIN` - Domain to poll for updates (Required)
+-   `PORT` - Server port (Optional, default: 8080)
 
 Example:
 
 ```bash
-PORT=3000 CANISTER_URL=https://mycanister.ic0.app/updates npm start
+PORT=8080 DOMAIN=my-domain.com npm start
 ```
 
 ### Connecting Clients

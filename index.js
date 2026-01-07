@@ -4,7 +4,12 @@ const https = require('https');
 
 // Configuration
 const PORT = process.env.PORT || 8080;
-const API_URL = 'https://pds.edjcase.com/api/getRepoMessages';
+const DOMAIN = process.env.DOMAIN;
+if (!DOMAIN) {
+  console.error('Error: DOMAIN environment variable is not set.');
+  process.exit(1);
+}
+const API_URL = `https://${DOMAIN}/api/getRepoMessages`;
 const POLL_INTERVAL = 30000; // 30 seconds
 
 // Create HTTP server
@@ -24,7 +29,7 @@ wss.on('connection', (ws, req) => {
   const clientId = `${req.socket.remoteAddress}:${req.socket.remotePort}`;
   const initialCursor = parsedUrl.searchParams.get('cursor');
 
-  console.log(`[${new Date().toISOString()}] Client connected: ${clientId}, cursor: ${initialCursor}`);
+  console.log(`[${new Date().toISOString()}] Client connected: ${clientId}, cursor: ${initialCursor}, url: ${req.url}`);
 
   let lastSeq = initialCursor ? parseInt(initialCursor) : 0;
   let pollInterval = null;
